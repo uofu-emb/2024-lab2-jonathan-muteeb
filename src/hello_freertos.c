@@ -13,8 +13,8 @@
 #include "pico/multicore.h"
 #include "pico/cyw43_arch.h"
 
-int count = 0;
-bool on = false;
+int count = 0; // controls when the LED turns on/off
+bool on = false; // LED state
 
 #define MAIN_TASK_PRIORITY      ( tskIDLE_PRIORITY + 1UL )
 #define BLINK_TASK_PRIORITY     ( tskIDLE_PRIORITY + 2UL )
@@ -22,6 +22,9 @@ bool on = false;
 #define BLINK_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 
 void blink_task(__unused void *params) {
+    // make sure everything is good, then
+    // blink LED once per second (50% duty cycle), but every 5 blinks
+    // leave it on/off for a full second before blinking again
     hard_assert(cyw43_arch_init() == PICO_OK);
     while (true) {
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on);
@@ -31,6 +34,8 @@ void blink_task(__unused void *params) {
 }
 
 void main_task(__unused void *params) {
+    // create a task to run blink_task with this one;
+    // then read characters, invert the case, and print them back
     xTaskCreate(blink_task, "BlinkThread",
                 BLINK_TASK_STACK_SIZE, NULL, BLINK_TASK_PRIORITY, NULL);
     char c;
