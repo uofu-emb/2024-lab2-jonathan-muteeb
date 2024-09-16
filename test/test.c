@@ -4,8 +4,8 @@
 #include <unity.h>
 #include "unity_config.h"
 
+/* We don't need to do any set up or tear down for the tests here */
 void setUp(void) {}
-
 void tearDown(void) {}
 
 void test_variable_assignment()
@@ -14,6 +14,7 @@ void test_variable_assignment()
     TEST_ASSERT_TRUE_MESSAGE(x == 1,"Variable assignment failed.");
 }
 
+/* Doesn't this test division? lol */
 void test_multiplication(void)
 {
     int x = 30;
