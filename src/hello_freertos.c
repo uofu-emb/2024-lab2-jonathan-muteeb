@@ -13,6 +13,8 @@
 #include "pico/multicore.h"
 #include "pico/cyw43_arch.h"
 
+#include "util.h"
+
 int count = 0; // controls when the LED turns on/off
 bool on = false; // LED state
 
@@ -27,9 +29,7 @@ void blink_task(__unused void *params) {
     // leave it on/off for a full second before blinking again
     hard_assert(cyw43_arch_init() == PICO_OK);
     while (true) {
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on);
-        if (count++ % 11) on = !on;
-        vTaskDelay(500);
+        on = blink_and_delay(&count, on);
     }
 }
 
@@ -40,9 +40,7 @@ void main_task(__unused void *params) {
                 BLINK_TASK_STACK_SIZE, NULL, BLINK_TASK_PRIORITY, NULL);
     char c;
     while(c = getchar()) {
-        if (c <= 'z' && c >= 'a') putchar(c - 32);
-        else if (c >= 'A' && c <= 'Z') putchar(c + 32);
-        else putchar(c);
+        putchar(invertchar(c));
     }
 }
 
